@@ -1,0 +1,93 @@
+<html>
+    <head>
+        <style>
+            
+        .chart-container {
+            max-width: 1050px;
+            border: 3px solid red;
+            margin: 0 auto;
+            /* auto centers the div */
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        svg {
+            border: 2px solid purple;
+            overflow: visible;
+        }
+
+
+        h1 {
+            border: 2px solid green;
+        }
+        </style>
+    </head>
+    <body>
+        <div class = "chart-container">
+            <h1 class = "headline">
+                Educational Attainment
+            </h1>
+
+            <svg width = "1050px" height = "500px">
+
+            </svg>
+
+            <img src = "dataviz-key.svg"></img>
+        </div>
+
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+
+        <script src="https://unpkg.com/topojson@3"></script>
+
+        <script>
+
+            console.log({topojson})
+
+            Promise.all([ //waits for all the data to load, then when loaded will return it all in one array called res
+                d3.json('cb_topo.json'),
+            ])
+                .then(ready)
+                .catch((err) => {
+                    console.log(err);
+                });
+
+            //function ready(res) {
+            //    console.log(res[0])
+             //   let data = res[0]
+             //   let width = 1050;
+              //  let height = 500;
+
+            function ready(res) {
+                console.log(res[0])
+                let raw = res[0]
+                let data = topojson.feature(raw, raw.objects.cb_2018_us_county_500k);
+                let width = 1050;
+                let height = 500;
+
+            console.log(data)
+
+            let svg = d3.select("body").select("svg")
+
+            let myProjection = d3.geoAlbersUsa()
+                .fitSize([width, height], data)
+
+            let path = d3.geoPath()
+                .projection(myProjection)
+
+             //svg.append("path")
+             //   .attr("d", path(data))
+             //   .style("fill", "none")
+             //   .style("stroke", "#333")
+
+            svg
+                .selectAll(".cb_2018_us_county_500k")
+                .data(data.features)
+                .join("path")
+                .attr("d", path)
+                .attr("class", d => d.properties.GEOID)
+                .style("fill", "none")
+                .style("stroke", "#333")
+
+    }
+        </script>    
+    </body>
+</html>
