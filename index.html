@@ -43,25 +43,25 @@
             console.log({topojson})
 
             Promise.all([ //waits for all the data to load, then when loaded will return it all in one array called res
-                d3.json('cb_2018_us_county_500k.json'),
+                d3.json('cb_topo.json'),
             ])
                 .then(ready)
                 .catch((err) => {
                     console.log(err);
                 });
 
-            function ready(res) {
-                console.log(res[0])
-                let data = res[0]
-                let width = 1050;
-                let height = 500;
-
             //function ready(res) {
             //    console.log(res[0])
-            //    let raw = res[0]
-             //   let data = topojson.feature(raw, raw.objects.cb_2018_us_county_500k);
-             //   let width = 1050;
-             //   let height = 500;
+            //    let data = res[0]
+            //    let width = 1050;
+            //    let height = 500;
+
+            function ready(res) {
+                console.log(res[0])
+                let raw = res[0]
+                let data = topojson.feature(raw, raw.objects.cb_2018_us_county_500k);
+                let width = 1050;
+                let height = 500;
 
             console.log(data)
 
