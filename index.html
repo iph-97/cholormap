@@ -75,17 +75,17 @@
 
             svg.append("path")
                 .attr("d", path(data))
-                .style("fill", "none")
-                .style("stroke", "#333")
-
-            svg.append("g")
-                .selectAll(".cb_2018_us_county_500k")
-                .data(data.features)
-                .join("path")
-                .attr("d", path)
-                .attr("class", d => d.properties.GEOID)
-                .style("fill", "none")
-                .style("stroke", "#333")
+                .style("fill", "white")
+                .style("stroke", "black")
+            
+            //svg.append("g")
+            //    .selectAll(".cb_2018_us_county_500k")
+            //    .data(data.features)
+            //    .join("path")
+            //    .attr("d", path)
+            //    .style("fill", "white")
+            //    .style("stroke", "black")
+            //    .attr("class", d => d.properties.GEOID)
 
     }
         </script>    
