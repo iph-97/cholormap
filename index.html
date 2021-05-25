@@ -4,20 +4,43 @@
             
         .chart-container {
             max-width: 1050px;
-            border: 3px solid red;
             margin: 0 auto;
             /* auto centers the div */
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
 
         svg {
-            border: 2px solid purple;
-            overflow: visible;
+            margin-bottom: 10;
         }
 
 
         h1 {
-            border: 2px solid green;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        .notes {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        .source {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            color: gray;
+            font-size: 12;
+        }
+
+        img {
+            margin-top: 10;
+            margin-left: 10;
+        }
+
+        .pop-up {
+            pointer-events: none;
+            position: absolute;
+            background-color: aliceblue;
+            border-color: gray;
+            font-size: 12;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            width: 150;
         }
         </style>
     </head>
@@ -27,12 +50,23 @@
                 Educational Attainment
             </h1>
 
+            <p class = "notes">
+                Which counties are the most educated in the United States? 
+                See which counties have the highest percentage of bachelor degrees or higher.
+            </p>
+
+            <p1 class="source">
+                Source: USDA
+            </p1>
+
             <svg width = "1050px" height = "500px">
 
             </svg>
 
             <img src = "dataviz-key.svg"></img>
         </div>
+
+        <div class = "pop-up"></div>
 
         <script src="https://d3js.org/d3.v6.min.js"></script>
 
@@ -43,7 +77,7 @@
             console.log({topojson})
 
             Promise.all([ //waits for all the data to load, then when loaded will return it all in one array called res
-                d3.json('cb_topo.json'),
+                d3.json('fill_topo3.json'),
             ])
                 .then(ready)
                 .catch((err) => {
@@ -59,11 +93,11 @@
             function ready(res) {
                 console.log(res[0])
                 let raw = res[0]
-                let data = topojson.feature(raw, raw.objects.cb_2018_us_county_500k);
+                let data = topojson.feature(raw, raw.objects.county);
                 let width = 1050;
                 let height = 500;
 
-            console.log(data)
+            console.log(data.features)
 
             let svg = d3.select("body").select("svg")
 
@@ -73,19 +107,51 @@
             let path = d3.geoPath()
                 .projection(myProjection)
 
-            svg.append("path")
-                .attr("d", path(data))
-                .style("fill", "white")
-                .style("stroke", "black")
-            
-            //svg.append("g")
-            //    .selectAll(".cb_2018_us_county_500k")
-            //    .data(data.features)
-            //    .join("path")
-            //    .attr("d", path)
-            //    .style("fill", "white")
+            //svg.append("path")
+            //    .attr("d", path(data))
+            //    .style("fill", "blue")
             //    .style("stroke", "black")
-            //    .attr("class", d => d.properties.GEOID)
+
+            let popup = d3.select(".pop-up");
+            
+            let counties = svg.append("g")
+                .selectAll(".counties")
+                .data(data.features)
+                .enter().append("path")
+                .attr("d", path)
+                .style("stroke", "gray")
+                .style("fill-opacity", 1)
+                .style("fill", d => d.properties.fill)
+                .attr("class", d => d.properties.GEOID)
+
+            counties.on("mouseover", (event, d) => {
+                
+                let lang = "Between 2015 and 2019 " + d.properties.bach_higher + " percent of residents in " + d.properties.NAMELSAD + " had a Bachelor's Degree or higher."
+
+                popup
+                    .style("opacity", 1)
+                    .style("left", (event.x - 100) + "px")
+                    .style("top", (event.y - 100) + "px")
+                    .html(lang)
+
+                svg.select(this)
+                    .style("stroke", "black")
+                    .style("stroke-width", .8)
+                    .style("fill", "black")
+                    .raise()
+
+            //    console.log(event)
+            })
+
+            counties.on("mouseout", (event, d) => {
+                counties
+                    .style("stroke", "gray")
+                    .style("fill-opacity", 1)
+
+                popup
+                    .style("opacity", 0)
+            })
+            
 
     }
         </script>    
